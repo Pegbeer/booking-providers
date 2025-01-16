@@ -1,30 +1,34 @@
-"use client";
+type Spot = {
+    id: number;
+    reserved: boolean;
+}
 
-import { useEffect, useState } from "react";
-import Counter from "./counter";
+type GridProps = {
+    rows: number;
+    columns: number;
+    spots: Spot[]
+}
 
-export default function GridPanel() {
-    const [rows, setRows] = useState(0);
-    const [columns, setColumns] = useState(0);
-
-    const handleRowValue = (value: number) => {
-        setRows(value);
-    }
-
-    const handleColumnsValue = (value: number) => {
-        setColumns(value);
-    }
-    
+export default function GridPanel({ rows, columns, spots }: GridProps) {
+    const gridClasses = `grid grid-cols-${columns} grid-rows-${rows} gap-4`;
 
     return (
-        <div className="flex">
-            <aside className="flex flex-col space-y-4 h-max sm:max-w-[325px] p-6 border border-red-300">
-                <Counter label="Filas" onValueChanged={handleRowValue} />
-                <Counter label="Columnas" onValueChanged={handleColumnsValue} />
-            </aside>
-            <main className="flex-grow flex flex-wrap">
-                
-            </main>
+        <div className={gridClasses}>
+            {spots.map((spot) => (
+                <GridItem key={spot.id} text={`Spot ${spot.id}`}/>
+            ))}
+        </div>
+    );
+}
+
+interface ItemProps{
+    text:string;
+}
+
+const GridItem = ({text}:ItemProps) => {
+    return (
+        <div className="bg-slate-400 rounded p-4">
+            {text}
         </div>
     );
 }
