@@ -1,7 +1,9 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Spot } from "@/components/ui/reservation-spot";
-import Grid from "@/components/ui/grid";
+import Grid, { Point, Spot } from "@/components/ui/grid";
+import { CampaingDto } from "./dto/campaing-dto";
+import { createCampaing } from "./actions/actions";
+import { Campaing } from "@prisma/client";
 
 export default function Home() {
   const [rows, setRows] = useState(1);
@@ -58,6 +60,18 @@ export default function Home() {
     }
   }, [selecting])
 
+  const getPoints = ():Point[] =>{
+    let points:Point[] = [];
+    for(let x = 0; x < selected.length; x++){
+      for(let y = 0; y < selected[x].length; y++){
+        if(selected[x][y]){
+          points.push(new Point(x,y));
+        }
+      }
+    }
+    return points;
+  }
+
   const handleMouseUp = useCallback(() => {
     setSelecting(false)
     startCellRef.current = null
@@ -67,6 +81,7 @@ export default function Home() {
       {
         color: getRandomColor(),
         selectedCells: selected.map(row => [...row]),
+        points: getPoints()
       }
     ]);
 
@@ -87,6 +102,28 @@ export default function Home() {
       setSpots([]);
     }
   }, [rows, columns]);
+
+  useEffect(() =>{
+    console.log(spots)
+  },[spots])
+
+
+  const handleSaveCampaing = async(e:React.MouseEvent<HTMLButtonElement>) =>{
+    e.preventDefault()
+    const dto:CampaingDto = {
+      columns: columns,
+      rows: rows,
+      spots: spots.map(it => ({
+        color: it.color,
+        points: it.points.map(p => ({
+          x: p.x,
+          y: p.y
+        }))
+      }))
+    }
+
+    await createCampaing(dto);
+  }
 
   return (
     <div className="container mx-auto h-full flex flex-col space-y-4  p-6">
@@ -113,14 +150,14 @@ export default function Home() {
           className="border rounded p-1 text-black" />
       </div>
       <div className="flex items-center justify-between">
-        <button className="bg-slate-900 w-min p-2 text-slate-200 rounded hover:opacity-75">Guardar</button>
+        <button className="bg-slate-900 w-min p-2 text-sm text-slate-50 rounded hover:opacity-75" onClick={handleSaveCampaing}>Guardar</button>
         <span className="font-semibold">Slots: {spots.length}</span>
       </div>
       <span className="text-center font-medium">Selecciona y arrastra por los espacios para definir un slot</span>
       <Grid
         rows={rows}
         columns={columns}
-        selected={selected}
+        matrix={selected}
         spots={spots}
         handleMouseUp={handleMouseUp}
         handleMouseDown={handleMouseDown}

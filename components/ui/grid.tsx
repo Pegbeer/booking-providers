@@ -1,17 +1,26 @@
 import Cell from "./cell";
-import { Spot } from "./reservation-spot";
+
+export class Point{
+  constructor(public x:number, public y:number){}
+}
+
+export type Spot = {
+  color:string;
+  selectedCells:boolean[][];
+  points:Point[]
+}
 
 export interface GridProps{
     rows:number;
     columns:number;
-    selected:boolean[][];
+    matrix:boolean[][];
     spots:Spot[];
     handleMouseDown:(rowIndex:number, colIndex:number) => void;
     handleMouseEnter:(rowIndex:number, colIndex:number) => void;
     handleMouseUp:() => void;
 }
 
-export default function Grid({ rows, columns, selected, spots, handleMouseDown, handleMouseEnter, handleMouseUp }:GridProps){
+export default function Grid({ rows, columns, matrix, spots, handleMouseDown, handleMouseEnter, handleMouseUp }:GridProps){
     const getBackgroundColor = (rowIndex: number, colIndex: number) => {
       for (const spot of spots) {
         if (spot.selectedCells[rowIndex] && spot.selectedCells[rowIndex][colIndex]) {
@@ -33,7 +42,7 @@ export default function Grid({ rows, columns, selected, spots, handleMouseDown, 
                 key={colIndex}
                 rowIndex={rowIndex}
                 columnIndex={colIndex}
-                selected={selected[rowIndex] && selected[rowIndex][colIndex]}
+                selected={matrix[rowIndex] && matrix[rowIndex][colIndex]}
                 color={getBackgroundColor(rowIndex, colIndex)}
                 onMouseDownCallback={handleMouseDown}
                 onMouseEnterCallback={handleMouseEnter}
