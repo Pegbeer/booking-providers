@@ -1,8 +1,10 @@
 'use server';
 
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt';
 import { CampaingDto } from "../dto/campaing-dto";
 import { SpotDto } from "../dto/spot-dto";
+import { LoginFormSchema, LoginFormState } from "../lib/definitions";
 
 const db = new PrismaClient()
 
@@ -67,4 +69,30 @@ export async function getActiveCampaing() : Promise<CampaingDto | undefined>{
     ))
 
     return { rows: rowsGrid, columns: columnsGrid, spots: spots }
+}
+
+export async function login(state:LoginFormState, formData:FormData){
+    const validateFields = LoginFormSchema.safeParse({
+        username: formData.get('username'),
+        password: formData.get('password')
+    })
+
+    if(!validateFields.success){
+        return {
+            errors: validateFields.error.flatten().fieldErrors
+        }
+    }
+
+    const { username,password } = validateFields.data
+
+    const hashedPassword = await bcrypt.hash(password,10)
+
+    const user = await db.user.findFirst({
+        where:{
+            username: username
+        }
+    })
+
+    if(!user) return 
+
 }

@@ -42,7 +42,7 @@ model ProviderSpot{
   id String @id @default(uuid())
   providerId String
   spotId String
-  isActive Boolean
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
   provider Provider @relation(fields: [providerId], references: [id])
   spot Spot @relation(fields: [spotId], references: [id])
