@@ -2,6 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { CampaingDto } from "../dto/campaing-dto";
+import { SpotDto } from "../dto/spot-dto";
 
 const db = new PrismaClient()
 
@@ -36,19 +37,34 @@ export async function createCampaing(dto: CampaingDto) {
     });
 }
 
-export async function getActiveCampaing() : CampaingDto | undefined{
-    const campaing = await db.campaing.findFirst({
+export async function getActiveCampaing() : Promise<CampaingDto | undefined>{
+    const activeCampaing = await db.campaing.findFirst({
         include:{
-            spots: true
+            spots: {
+                orderBy:{
+                    createdAt: 'asc'
+                },
+                include:{
+                    points: true
+                }
+            }
         },
         where: {
             active: true
-        }
+        },
     })
 
-    if(!campaing) return
+    if(!activeCampaing) return undefined;
 
-    const spots = campaing.spots.
+    const columnsGrid = activeCampaing.columnsGrid;
+    const rowsGrid = activeCampaing.rowsGrid;
 
-    return { columns: campaing.columnsGrid, rows: campaing.rowsGrid, spots: }
+    const spots:SpotDto[] = activeCampaing.spots.map(it => (
+        {
+            id: it.id,
+            points: it.points.map(p => ({x: p.x, y:p.y}))
+        }
+    ))
+
+    return { rows: rowsGrid, columns: columnsGrid, spots: spots }
 }

@@ -25,14 +25,27 @@ model Provider{
   id  String @id @default(uuid())
   name String
   users User[]
+  spots ProviderSpot[]
 }
 
 model Spot{
   id  String @id @default(uuid())
   campaingId String
   cost Decimal
+  createdAt DateTime @default(now())
   campaing Campaing @relation(fields: [campaingId], references: [id])
   points Point[]
+  providers ProviderSpot[]
+}
+
+model ProviderSpot{
+  id String @id @default(uuid())
+  providerId String
+  spotId String
+  isActive Boolean
+  createdAt DateTime @default(now())
+  provider Provider @relation(fields: [providerId], references: [id])
+  spot Spot @relation(fields: [spotId], references: [id])
 }
 
 model Point{

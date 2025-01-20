@@ -1,6 +1,6 @@
 import { PointDto } from "./point-dto"
 
 export interface SpotDto{
-    color:string
+    id?:string;
     points:PointDto[]
 }

@@ -20,7 +20,7 @@ export interface GridProps{
     handleMouseUp:() => void;
 }
 
-export default function Grid({ rows, columns, matrix, spots, handleMouseDown, handleMouseEnter, handleMouseUp }:GridProps){
+export default function DraggableGrid({ rows, columns, matrix, spots, handleMouseDown, handleMouseEnter, handleMouseUp }:GridProps){
     const getBackgroundColor = (rowIndex: number, colIndex: number) => {
       for (const spot of spots) {
         if (spot.selectedCells[rowIndex] && spot.selectedCells[rowIndex][colIndex]) {
@@ -36,7 +36,7 @@ export default function Grid({ rows, columns, matrix, spots, handleMouseDown, ha
         onMouseUp={handleMouseUp}
       >
         {Array(rows).fill(null).map((_, rowIndex) => (
-          <div key={rowIndex} className="flex ">
+          <div key={rowIndex} className="flex">
             {Array(columns).fill(null).map((_, colIndex) => (
               <Cell
                 key={colIndex}

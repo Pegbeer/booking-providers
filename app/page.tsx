@@ -1,9 +1,8 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from "react";
-import Grid, { Point, Spot } from "@/components/ui/grid";
+import DraggableGrid, { Point, Spot } from "@/components/ui/draggable-grid";
 import { CampaingDto } from "./dto/campaing-dto";
 import { createCampaing } from "./actions/actions";
-import { Campaing } from "@prisma/client";
 
 export default function Home() {
   const [rows, setRows] = useState(1);
@@ -61,7 +60,7 @@ export default function Home() {
   }, [selecting])
 
   const getPoints = ():Point[] =>{
-    let points:Point[] = [];
+    const points:Point[] = [];
     for(let x = 0; x < selected.length; x++){
       for(let y = 0; y < selected[x].length; y++){
         if(selected[x][y]){
@@ -114,7 +113,6 @@ export default function Home() {
       columns: columns,
       rows: rows,
       spots: spots.map(it => ({
-        color: it.color,
         points: it.points.map(p => ({
           x: p.x,
           y: p.y
@@ -154,7 +152,7 @@ export default function Home() {
         <span className="font-semibold">Slots: {spots.length}</span>
       </div>
       <span className="text-center font-medium">Selecciona y arrastra por los espacios para definir un slot</span>
-      <Grid
+      <DraggableGrid
         rows={rows}
         columns={columns}
         matrix={selected}
